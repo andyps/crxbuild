@@ -1,4 +1,4 @@
-crxbuild
+CRX builder
 ========
 
 Build chromium extensions
