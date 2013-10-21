@@ -18,7 +18,7 @@ Usage
     $ php crxbuild.php --extension_dir=<extension dir> --key_file=<private key path> --output_dir=<output dir>
     
 output_dir is an optional. It is your current directory by default.
-You can also use crxbuild.sh (for Linux) and crxbuild.bat (for Windows), so it'll look like
+You may also use crxbuild.sh (Linux) and crxbuild.bat (Windows), so it'll look like
 
     $ ./crxbuild.sh --extension_dir=<extension dir> --key_file=<private key path>
     
