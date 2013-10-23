@@ -10,7 +10,7 @@ Requirements
 * zlib extension
 * openssl extension
 
-How to create crx extension
+How to make crx extension
 ===================
 
 1) Command line
