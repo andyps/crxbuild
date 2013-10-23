@@ -1,14 +1,17 @@
 <?php
-class crxBuild {
+class CrxBuild
+{
     const CRX_FORMAT_VERSION = 2;
     private $_privateKey = null;
     private $_privateKeyDetails = null;
     private $_crxName = null;
-    public function __construct($options) {
+    public function __construct($options)
+    {
         self::checkRequirements();
         $this->_setOptions($options);
     }
-    public static function checkRequirements() {
+    public static function checkRequirements()
+    {
         $requirementFails = array();
         if (!extension_loaded('zlib')) {
             $requirementFails[] = "zlib extension";
@@ -17,10 +20,13 @@ class crxBuild {
             $requirementFails[] = "openssl extension";
         }
         if ($requirementFails) {
-            throw new Exception('Requirements: ' . implode(', ', $requirementFails));
+            throw new Exception(
+                'Requirements: ' . implode(', ', $requirementFails)
+            );
         }
     }
-    private function _setOptions($options) {
+    private function _setOptions($options)
+    {
         $options['extension_dir'] = trim(@$options['extension_dir']);
         if (!isset($options['extension_dir'][0])) {
             throw new Exception('extension_dir is not set');
@@ -29,7 +35,7 @@ class crxBuild {
         if (!isset($options['key_file'][0])) {
             throw new Exception('key_file is not set');
         }
-        
+
         $options['extension_dir'] = rtrim($options['extension_dir'], '\\/') . '/';
         $options['output_dir'] = trim(@$options['output_dir']);
         if (!isset($options['output_dir'][0])) {
@@ -40,18 +46,23 @@ class crxBuild {
             $options['only_zip'] = false;
         }
         $options['only_zip'] = (bool)$options['only_zip'];
-        
+
         $this->_crxName = basename($options['extension_dir']);
         $this->options = $options;
-        
+
     }
-    public function zip($from, $to) {
+    public function zip($from, $to)
+    {
         if (!is_dir($from) || !is_readable($from)) {
-            throw new Exception('Extension dir doesn\'t not exist or is not a readable directory');
+            throw new Exception(
+                'Extension dir doesn\'t not exist or is not a readable directory'
+            );
         }
         $outputDir = dirname($to);
         if (!is_dir($outputDir) || !is_writable($outputDir)) {
-            throw new Exception('Output dir doesn\'t not exist or is not a writable directory');
+            throw new Exception(
+                'Output dir doesn\'t not exist or is not a writable directory'
+            );
         }
         $phar = new PharData($to, null, null, PHAR::ZIP);
         $phar->buildFromDirectory($from);
@@ -60,9 +71,12 @@ class crxBuild {
         if (!file_exists($to)) {
             throw new Exception('Can\'t create zip file');
         }
-        if (PHP_SAPI == 'cli') echo "Zip file is created\n";
+        if (PHP_SAPI == 'cli') {
+            echo "Zip file is created\n";
+        }
     }
-    public function getPublicDerKey() {
+    public function getPublicDerKey()
+    {
         $this->_readPrivateKey();
         $publicKeyPem = $this->_privateKeyDetails['key'];
         $publicKeyPemLines = explode("\n", trim($publicKeyPem));
@@ -71,22 +85,30 @@ class crxBuild {
         $publicKeyDer = implode("\n", $publicKeyPemLines);
         return base64_decode($publicKeyDer);
     }
-    private function _readPrivateKey() {
+    private function _readPrivateKey()
+    {
         $keyFile = $this->options['key_file'];
         if (!is_file($keyFile) || !is_readable($keyFile)) {
-            throw new Exception('Private key file doesn\'t not exist or is not a readable file');
+            throw new Exception(
+                'Private key file doesn\'t not exist or is not a readable file'
+            );
         }
-        $this->_privateKey = openssl_pkey_get_private(file_get_contents($keyFile));
+        $this->_privateKey = openssl_pkey_get_private(
+            file_get_contents($keyFile)
+        );
         if ($this->_privateKey) {
-            $this->_privateKeyDetails = openssl_pkey_get_details($this->_privateKey);
+            $this->_privateKeyDetails = openssl_pkey_get_details(
+                $this->_privateKey
+            );
         }
         if (!$this->_privateKeyDetails) {
             throw new Exception('Wrong private key');
         }
     }
-    public function build() {
+    public function build()
+    {
         $sig = null;
-        
+
         $zipFile = $this->options['output_dir'] . $this->_crxName . '.zip';
         $crxFile = $this->options['output_dir'] . $this->_crxName . '.crx';
         $this->zip($this->options['extension_dir'], $zipFile);
@@ -94,23 +116,29 @@ class crxBuild {
             return;
         }
         $publicKeyDer = $this->getPublicDerKey();
-        
+
         $zipFileContent = file_get_contents($zipFile);
-        openssl_sign($zipFileContent, $sig, $this->_privateKey, OPENSSL_ALGO_SHA1);
-        
+        openssl_sign(
+            $zipFileContent, $sig, $this->_privateKey, OPENSSL_ALGO_SHA1
+        );
+
         if (!$sig) {
             throw new Exception('Can\'t create a signature for zip file');
         }
-        
-        $Cr24 = "\x43\x72\x32\x34";
+
+        $cr24 = "\x43\x72\x32\x34";
         $publicKeyDerLen = strlen($publicKeyDer);
         $sigLen = strlen($sig);
-        
-        $crxHeader = $Cr24 . pack('VVV', self::CRX_FORMAT_VERSION, $publicKeyDerLen, $sigLen);
-        
+
+        $crxHeader = $cr24 . pack(
+            'VVV', self::CRX_FORMAT_VERSION, $publicKeyDerLen, $sigLen
+        );
+
         $crx = "$crxHeader$publicKeyDer$sig$zipFileContent";
         file_put_contents($crxFile, $crx);
-        if (PHP_SAPI == 'cli') echo "Crx file is created\n";
+        if (PHP_SAPI == 'cli') {
+            echo "Crx file is created\n";
+        }
         openssl_pkey_free($this->_privateKey);
     }
 }

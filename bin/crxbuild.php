@@ -7,17 +7,18 @@ if (version_compare(PHP_VERSION, '5.3.0') < 0) {
 }
 
 if (version_compare(PHP_VERSION, '5.4.0') >= 0) {
-    error_reporting(E_ALL ^ E_DEPRECATED ^ E_STRICT ^ E_NOTICE);    
+    error_reporting(E_ALL ^ E_DEPRECATED ^ E_STRICT ^ E_NOTICE);
 } else {
     error_reporting(E_ALL ^ E_DEPRECATED ^ E_NOTICE);
 }
 
 if ($argc < 3) {
-    echo 'Usage: php crxbuild.php --extension_dir=<extension dir> --key_file=<private key path>';
+    echo 'Usage: php crxbuild.php --extension_dir=<extension dir> ',
+        '--key_file=<private key path>';
     exit(1);
 }
 
-require __DIR__ . '/../lib/crxBuild.php';
+require __DIR__ . '/../lib/CrxBuild.php';
 
 $options = array();
 foreach ($argv as $arg) {
@@ -29,7 +30,7 @@ foreach ($argv as $arg) {
 }
 
 try {
-    $crxBuild = new crxBuild($options);
+    $crxBuild = new CrxBuild($options);
     $crxBuild->build();
     echo "\nDone";
     echo "\n";

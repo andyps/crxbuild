@@ -25,8 +25,8 @@ You may also use crxbuild.sh (Linux) and crxbuild.bat (Windows), so it'll look l
 2) PHP
 
     <?php
-    require $pathToCrxBuildDirectory . '/lib/crxBuild.php';
-    $crxBuild = new crxBuild(array(
+    require $pathToCrxBuildDirectory . '/lib/CrxBuild.php';
+    $crxBuild = new CrxBuild(array(
       'extension_dir' => $extensionDirectory,
       'key_file' => $pathToYourPrivateKey,
       'output_dir' => $whereToPlaceZipAndExtensionCrxFiles //optional
