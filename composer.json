@@ -1,0 +1,28 @@
+{
+    "name": "andyps/crxbuild",
+    "type": "library",
+    "description": "Build chromium extensions",
+    "keywords": ["chrome", "chromium", "crx", "extension"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Andrey Pashentsev",
+            "email": "avp200681@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3",
+        "ext-openssl": "*",
+        "ext-zlib": "*",
+        "ext-phar": "*"
+    },
+    "autoload": {
+        "classmap": ["lib/"]
+    },
+    "bin": ["bin/crxbuild.bat", "bin/crxbuild.sh", "bin/crxbuild.php"],
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}

@@ -12,13 +12,28 @@ if (version_compare(PHP_VERSION, '5.4.0') >= 0) {
     error_reporting(E_ALL ^ E_DEPRECATED ^ E_NOTICE);
 }
 
-if ($argc < 3) {
-    echo 'Usage: php crxbuild.php --extension_dir=<extension dir> ',
-        '--key_file=<private key path>';
-    exit(1);
+foreach (array(__DIR__ . '/../../../autoload.php', __DIR__ . '/../vendor/autoload.php') as $file) {
+    if (file_exists($file)) {
+        define('CRXBUILD_COMPOSER_INSTALL', $file);
+        break;
+    }
 }
 
-require __DIR__ . '/../lib/CrxBuild.php';
+if (!defined('CRXBUILD_COMPOSER_INSTALL')) {
+    echo 'You need to set up the project dependencies using the following commands:' . PHP_EOL .
+        'wget http://getcomposer.org/composer.phar' . PHP_EOL .
+        'php composer.phar install' . PHP_EOL;
+    die(1);
+}
+
+require CRXBUILD_COMPOSER_INSTALL;
+
+if ($argc < 3) {
+    echo 'Usage: php crxbuild.php --extension_dir=<extension dir> ',
+         '--key_file=<private key path>',
+         "\n";
+    exit(1);
+}
 
 $options = array();
 foreach ($argv as $arg) {
